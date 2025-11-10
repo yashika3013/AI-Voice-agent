@@ -1,9 +1,5 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-import google.generativeai as genai
-import os
-import json
 from datetime import datetime
 
 app = Flask(__name__)
