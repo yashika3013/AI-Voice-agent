@@ -9,60 +9,43 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-# Configure Gemini - FREE TIER
-genai.configure(api_key='AIzaSyCfB16i5PkO0tI39slO7Hi4XiMrsjlRgIs')  # Get from: https://aistudio.google.com/
+def generate_response_local(user_input, conversation_history):
+    text = user_input.lower().strip()
 
-class RiverwoodAgent:
-    def __init__(self):
-        self.model = genai.GenerativeModel('gemini-pro')
-        self.system_prompt = """
-        You are Riverwood AI Assistant - a friendly, warm voice agent for Riverwood Estate in Kharkhauda.
-        
-        PERSONALITY:
-        - Warm and friendly like a family member
-        - Use casual Hindi-English mix (Hinglish)
-        - Remember previous conversations
-        - Ask about chai, family, site visits
-        - Provide construction updates naturally
-        - Keep responses conversational and under 3 sentences
-        - Be genuinely curious about customer's day
-        
-        CONSTRUCTION UPDATES (Use these realistically):
-        - Foundation work: 95% complete
-        - Structural work: Starting next week  
-        - Landscaping: Planning phase
-        - Clubhouse: Design finalized
-        - Roads: 70% complete
-        
-        EXAMPLE PHRASES:
-        "Namaste Sir! Aaj to bahut accha weather hai, chai pee li?"
-        "Kal to aap site visit par aane wale the, kaisa laga Riverwood ka experience?"
-        "Aapke plot number H-25 ka foundation work complete ho gaya hai!"
-        "Monsoon season mein construction thoda slow hai, but planning solid chal rahi hai."
-        
-        Always respond in Hinglish. Be brief and warm.
-        """
-    
-    def generate_response(self, user_input, conversation_history):
-        try:
-            # Prepare conversation context
-            full_prompt = self.system_prompt + "\n\nConversation History:\n"
-            
-            for msg in conversation_history[-4:]:  # Last 4 exchanges
-                full_prompt += f"{msg['role']}: {msg['content']}\n"
-            
-            full_prompt += f"\nUser: {user_input}\nAssistant:"
-            
-            # Generate response
-            response = self.model.generate_content(full_prompt)
-            
-            return response.text.strip()
-            
-        except Exception as e:
-            return "Arre Sir, thodi technical difficulty aa rahi hai. Dobara try karein?"
+    # 1. Construction-related responses
+    if "tower a" in text:
+        return "Tower A almost ready hai, finishing touch chal raha hai. Possession January 2026 tak expected hai."
+    if "tower b" in text:
+        return "Tower B interiors chal rahe hain – flooring aur paint full speed pe hai."
+    if "clubhouse" in text:
+        return "Clubhouse ka design finalize ho gaya hai, opening next month plan hai!"
+    if "road" in text or "roads" in text:
+        return "Internal roads 70 percent done hain, markings aur lights abhi lag rahe hain."
+    if "landscaping" in text or "garden" in text:
+        return "Landscaping planning stage me hai – green zones ka layout finalize ho raha hai."
+    if "construction" in text or "update" in text:
+        return "Aaj ka site update: Tower A almost done, Tower B interiors chal rahe hain, clubhouse opening soon!"
 
-# Initialize agent
-agent = RiverwoodAgent()
+    # 2. Friendly chat
+    if "chai" in text or "coffee" in text:
+        return "Haha! Chai bina toh Riverwood incomplete lagta hai ☕ Aapne chai pee li?"
+    if "hello" in text or "hi" in text or "namaste" in text:
+        return "Namaste ji! Kaise ho aap? Aaj ka din kaisa jaa raha hai?"
+    if "thank" in text:
+        return "Arre koi baat nahi! Riverwood ke saath ho toh sab easy hai 😎"
+    if "visit" in text or "site" in text or "possession" in text:
+        return "Aap kab aa rahe ho site pe? Weekend visit kaafi chill hota hai!"
+
+    # 3. Simple memory-based continuation
+    if conversation_history:
+        last_user = next((msg["content"].lower() for msg in reversed(conversation_history) if msg["role"] == "user"), "")
+        if "tower" in last_user:
+            return "Sab towers schedule pe hain — aapka investment safe side pe hai 💯"
+        if "chai" in last_user:
+            return "Waise aap chai lover ho ya coffee gang? Mujhe lagta hai chai gang ho 😌"
+
+    # 4. Default fallback
+    return "Sab kuch smooth chal raha hai Riverwood me 🏗️ Aap kis tower ka update chahte ho — A, B, ya clubhouse?"
 
 @app.route('/')
 def home():
@@ -72,22 +55,23 @@ def home():
 def chat():
     try:
         data = request.json
-        user_input = data.get('message', '')
-        conversation_history = data.get('history', [])
-        
-        if not user_input:
-            return jsonify({'error': 'Empty message'}), 400
-        
-        # Generate AI response
-        ai_response = agent.generate_response(user_input, conversation_history)
-        
-        return jsonify({
-            'response': ai_response,
-            'timestamp': datetime.now().isoformat()
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        user_input = data.get("message", "").strip()
+        history = data.get("history", [])
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+        if not user_input:
+            return jsonify({"error": "Empty message"}), 400
+
+        ai_response = generate_response_local(user_input, history)
+        return jsonify({
+            "response": ai_response,
+            "timestamp": datetime.now().isoformat()
+        })
+    except Exception as e:
+        print("Error:", e)
+        return jsonify({
+            "response": "Thoda technical glitch aa gaya 😅 fir se boliye?",
+            "timestamp": datetime.now().isoformat()
+        })
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)

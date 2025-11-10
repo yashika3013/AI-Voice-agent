@@ -1,373 +1,235 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riverwood AI Voice Agent - FREE</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-
-        .chat-container {
-            height: 400px;
-            overflow-y: auto;
-            padding: 20px;
-            background: #f8f9fa;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .user-message {
-            background: #007bff;
-            color: white;
-            margin-left: auto;
-            border-bottom-right-radius: 5px;
-        }
-
-        .ai-message {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
-            border-bottom-left-radius: 5px;
-        }
-
-        .message-time {
-            font-size: 0.8em;
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        .input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #user-input {
-            flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            outline: none;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        #user-input:focus {
-            border-color: #007bff;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: #007bff;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-
-        .btn-voice {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-voice:hover {
-            background: #1e7e34;
-            transform: translateY(-2px);
-        }
-
-        .btn-voice.listening {
-            background: #dc3545;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .voice-status {
-            text-align: center;
-            padding: 10px;
-            font-style: italic;
-            color: #666;
-        }
-
-        .construction-badge {
-            background: #ff6b35;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8em;
-            margin-left: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Riverwood AI Voice Agent</title>
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  width: 90%;
+  max-width: 800px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.header {
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+.header h1 { margin: 0; font-size: 1.8rem; }
+.header p { margin: 6px 0 0; font-size: 1rem; opacity: 0.8; }
+.chat-container {
+  height: 400px;
+  overflow-y: auto;
+  background: #f8f9fa;
+  padding: 15px;
+}
+.message {
+  max-width: 80%;
+  margin-bottom: 12px;
+  padding: 10px 15px;
+  border-radius: 16px;
+  line-height: 1.4;
+  font-size: 15px;
+  animation: fadeIn 0.3s ease-in;
+}
+.user-message {
+  background: #007bff;
+  color: white;
+  margin-left: auto;
+  border-bottom-right-radius: 5px;
+}
+.ai-message {
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+  border-bottom-left-radius: 5px;
+}
+.message-time {
+  font-size: 0.8em;
+  opacity: 0.6;
+  margin-top: 3px;
+}
+.input-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  background: white;
+}
+#user-input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 2px solid #ddd;
+  outline: none;
+  font-size: 15px;
+}
+.btn {
+  border: none;
+  border-radius: 25px;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.btn-send {
+  background: #007bff;
+  color: white;
+}
+.btn-voice {
+  background: #28a745;
+  color: white;
+}
+.btn-voice.listening {
+  background: #dc3545;
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%,100%{transform:scale(1);}50%{transform:scale(1.05);}
+}
+@keyframes fadeIn {
+  from {opacity:0;transform:translateY(10px);}
+  to {opacity:1;transform:translateY(0);}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏗️ Riverwood AI Voice Agent</h1>
-            <p>Building Relationships, Not Just Real Estate</p>
-        </div>
+<div class="container">
+  <div class="header">
+    <h1>🏗️ Riverwood AI Voice Agent</h1>
+    <p>Building Relationships, Not Just Real Estate</p>
+  </div>
 
-        <div class="chat-container" id="chat-messages">
-            <!-- Messages will appear here -->
-        </div>
+  <div class="chat-container" id="chat"></div>
 
-        <div class="voice-status" id="voice-status">
-            Click the microphone to speak naturally
-        </div>
+  <div class="input-bar">
+    <input id="user-input" placeholder="Type or speak..." />
+    <button class="btn btn-send" onclick="sendMessage()">Send</button>
+    <button id="voice-btn" class="btn btn-voice" onclick="toggleVoice()">🎤 Speak</button>
+  </div>
+</div>
 
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Type your message or use voice...">
-            <button class="btn btn-primary" onclick="sendMessage()">
-                📨 Send
-            </button>
-            <button class="btn btn-voice" id="voice-btn" onclick="toggleVoice()">
-                🎤 Speak
-            </button>
-        </div>
-    </div>
+<script>
+let recognition = null;
+let isListening = false;
+let history = [];
 
-    <script>
-        // Conversation state
-        let conversationHistory = [];
-        let isListening = false;
-        let recognition = null;
+// Initialize speech recognition
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("Speech Recognition not supported!");
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-IN"; // Hinglish friendly
+  recognition.interimResults = false;
 
-        // Initialize speech recognition
-        function initSpeechRecognition() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = 'hi-IN'; // Hindi India
-                
-                recognition.onstart = function() {
-                    isListening = true;
-                    document.getElementById('voice-btn').classList.add('listening');
-                    document.getElementById('voice-status').textContent = "Listening... Speak now!";
-                };
-                
-                recognition.onresult = function(event) {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('user-input').value = transcript;
-                    stopListening();
-                    sendMessage();
-                };
-                
-                recognition.onerror = function(event) {
-                    console.error('Speech recognition error', event.error);
-                    stopListening();
-                    document.getElementById('voice-status').textContent = "Error listening. Try again.";
-                };
-                
-                recognition.onend = function() {
-                    stopListening();
-                };
-            } else {
-                document.getElementById('voice-status').textContent = "Speech recognition not supported in this browser.";
-            }
-        }
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('voice-btn').classList.add('listening');
+  };
+  recognition.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    document.getElementById('user-input').value = transcript;
+    stopListening();
+    sendMessage();
+  };
+  recognition.onerror = () => stopListening();
+  recognition.onend = () => stopListening();
+}
 
-        function toggleVoice() {
-            if (!isListening) {
-                startListening();
-            } else {
-                stopListening();
-            }
-        }
+function startListening() {
+  if (recognition) recognition.start();
+}
+function stopListening() {
+  if (recognition) recognition.stop();
+  isListening = false;
+  document.getElementById('voice-btn').classList.remove('listening');
+}
+function toggleVoice() {
+  isListening ? stopListening() : startListening();
+}
 
-        function startListening() {
-            if (recognition) {
-                recognition.start();
-            }
-        }
+// Speak text aloud (patched)
+function speakText(text) {
+  if (!('speechSynthesis' in window)) return;
+  const synth = window.speechSynthesis;
+  let voices = synth.getVoices();
 
-        function stopListening() {
-            if (recognition) {
-                recognition.stop();
-            }
-            isListening = false;
-            document.getElementById('voice-btn').classList.remove('listening');
-            document.getElementById('voice-status').textContent = "Click the microphone to speak naturally";
-        }
+  if (!voices.length) {
+    synth.onvoiceschanged = () => {
+      voices = synth.getVoices();
+      speakText(text);
+    };
+    return;
+  }
 
-        // Text-to-Speech function
-        function speakText(text) {
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'hi-IN'; // Hindi India
-                utterance.rate = 0.9;
-                utterance.pitch = 1;
-                
-                // Try to find Indian accent voice
-                const voices = speechSynthesis.getVoices();
-                const indianVoice = voices.find(voice => 
-                    voice.lang.includes('hi') || voice.lang.includes('IN')
-                );
-                
-                if (indianVoice) {
-                    utterance.voice = indianVoice;
-                }
-                
-                speechSynthesis.speak(utterance);
-            }
-        }
+  const clean = text.replace(/[^\w\s,.!?%\-:]/g, "");
+  const utter = new SpeechSynthesisUtterance(clean);
+  utter.lang = "en-IN";
+  utter.rate = 0.95;
+  utter.pitch = 1.05;
+  const v = voices.find(v => v.lang.includes("en-IN")) || voices.find(v => v.name.toLowerCase().includes("google")) || voices[0];
+  if (v) utter.voice = v;
+  synth.cancel();
+  synth.speak(utter);
+}
 
-        // Add message to chat
-        function addMessage(text, sender, isConstructionUpdate = false) {
-            const chat = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            
-            let messageHTML = text;
-            if (isConstructionUpdate) {
-                messageHTML += ' <span class="construction-badge">Update</span>';
-            }
-            
-            messageHTML += `<div class="message-time">${new Date().toLocaleTimeString()}</div>`;
-            
-            messageDiv.innerHTML = messageHTML;
-            chat.appendChild(messageDiv);
-            chat.scrollTop = chat.scrollHeight;
-        }
+// Add messages
+function addMessage(text, sender) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `message ${sender}-message`;
+  div.innerHTML = `${text}<div class='message-time'>${new Date().toLocaleTimeString()}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-        // Send message to backend
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const message = input.value.trim();
-            
-            if (!message) return;
-            
-            // Add user message to chat
-            addMessage(message, 'user');
-            input.value = '';
-            
-            // Add to conversation history
-            conversationHistory.push({ role: 'user', content: message });
-            
-            try {
-                const response = await fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        history: conversationHistory
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.response) {
-                    // Add AI response to chat
-                    const isUpdate = data.response.toLowerCase().includes('construction') || 
-                                   data.response.toLowerCase().includes('plot');
-                    addMessage(data.response, 'ai', isUpdate);
-                    
-                    // Add to conversation history
-                    conversationHistory.push({ role: 'assistant', content: data.response });
-                    
-                    // Speak the response
-                    speakText(data.response);
-                } else {
-                    throw new Error('No response from server');
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('Sorry, technical issue aa raha hai. Please try again.', 'ai');
-            }
-        }
+// Send message
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const msg = input.value.trim();
+  if (!msg) return;
 
-        // Handle Enter key
-        document.getElementById('user-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+  addMessage(msg, 'user');
+  history.push({ role: 'user', content: msg });
+  input.value = '';
 
-        // Auto-start with greeting
-        window.onload = function() {
-            initSpeechRecognition();
-            
-            // Initial greeting after a delay
-            setTimeout(() => {
-                const greeting = "Namaste! Main Riverwood AI Assistant. Aapka din kaisa chal raha hai? Chai pee li?";
-                addMessage(greeting, 'ai');
-                speakText(greeting);
-                conversationHistory.push({ role: 'assistant', content: greeting });
-            }, 1000);
-        };
-    </script>
+  const res = await fetch('/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ message: msg, history })
+  });
+  const data = await res.json();
+  const reply = data.response;
+  addMessage(reply, 'ai');
+  history.push({ role: 'assistant', content: reply });
+  speakText(reply);
+}
+
+// Initial greeting triggered on click
+window.onload = () => {
+  initSpeechRecognition();
+  document.body.addEventListener('click', function startChat() {
+    const greeting = "Namaste ji! Main Riverwood AI Assistant hoon. Aapka din kaisa jaa raha hai? Chai pee li?";
+    addMessage(greeting, 'ai');
+    history.push({ role: 'assistant', content: greeting });
+    speakText(greeting);
+    document.body.removeEventListener('click', startChat);
+  });
+};
+</script>
 </body>
 </html>
