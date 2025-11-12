@@ -128,12 +128,34 @@ let recognition = null;
 let isListening = false;
 let history = [];
 
-// Initialize speech recognition
+// --- transliteration map (fixes "aapka" issue)
+function transliterateHinglishToHindi(text) {
+  const map = {
+    "namaste": "नमस्ते",
+    "aapka": "आपका",
+    "kaisa": "कैसा",
+    "ho": "हो",
+    "chai": "चाय",
+    "pee": "पी",
+    "li": "ली",
+    "achha": "अच्छा",
+    "haan": "हाँ",
+    "nahi": "नहीं",
+    "thank": "थैंक",
+    "you": "यू",
+    "riverwood": "रिवरवुड"
+  };
+
+  let words = text.split(" ");
+  return words.map(w => map[w.toLowerCase()] || w).join(" ");
+}
+
+// --- initialize speech recognition
 function initSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) return alert("Speech Recognition not supported!");
   recognition = new SpeechRecognition();
-  recognition.lang = "en-IN"; // Hinglish friendly
+  recognition.lang = "en-IN";
   recognition.interimResults = false;
 
   recognition.onstart = () => {
@@ -162,9 +184,10 @@ function toggleVoice() {
   isListening ? stopListening() : startListening();
 }
 
-// Speak text aloud (patched)
+// --- speak text with natural Hindi/Indian voice
 function speakText(text) {
   if (!('speechSynthesis' in window)) return;
+
   const synth = window.speechSynthesis;
   let voices = synth.getVoices();
 
@@ -176,18 +199,29 @@ function speakText(text) {
     return;
   }
 
-  const clean = text.replace(/[^\w\s,.!?%\-:]/g, "");
-  const utter = new SpeechSynthesisUtterance(clean);
-  utter.lang = "en-IN";
-  utter.rate = 0.95;
-  utter.pitch = 1.05;
-  const v = voices.find(v => v.lang.includes("en-IN")) || voices.find(v => v.name.toLowerCase().includes("google")) || voices[0];
-  if (v) utter.voice = v;
-  synth.cancel();
-  synth.speak(utter);
+  // transliterate Hinglish to Hindi for better pronunciation
+  const hindiText = transliterateHinglishToHindi(text);
+
+  const utter = new SpeechSynthesisUtterance(hindiText);
+  utter.lang = "hi-IN";  // Hindi voice
+  utter.rate = 0.85;     // slower, smoother
+  utter.pitch = 1.0;     // natural tone
+
+  const voice = voices.find(v =>
+    v.lang.toLowerCase().includes("hi-in") ||
+    v.name.toLowerCase().includes("hindi")
+  ) || voices.find(v => v.lang.toLowerCase().includes("en-in")) || voices[0];
+
+  utter.voice = voice;
+
+  // slight pause before speaking
+  setTimeout(() => {
+    synth.cancel();
+    synth.speak(utter);
+  }, 600);
 }
 
-// Add messages
+// --- add messages to chat
 function addMessage(text, sender) {
   const chat = document.getElementById('chat');
   const div = document.createElement('div');
@@ -197,7 +231,7 @@ function addMessage(text, sender) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// Send message
+// --- send message to Flask backend
 async function sendMessage() {
   const input = document.getElementById('user-input');
   const msg = input.value.trim();
@@ -212,6 +246,7 @@ async function sendMessage() {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ message: msg, history })
   });
+
   const data = await res.json();
   const reply = data.response;
   addMessage(reply, 'ai');
@@ -219,7 +254,7 @@ async function sendMessage() {
   speakText(reply);
 }
 
-// Initial greeting triggered on click
+// --- initial greeting on first click
 window.onload = () => {
   initSpeechRecognition();
   document.body.addEventListener('click', function startChat() {
